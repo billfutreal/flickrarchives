@@ -1,6 +1,6 @@
 # Flickr Album Rebuilder (Python)
 
-**Offline Flickr export organizer** — Rebuilds your Flickr photo & video library into proper album folders using only the downloaded ZIP files.  
+**Offline Flickr export organizer** – Rebuilds your Flickr photo & video library into proper album folders using only the downloaded ZIP files.  
 No API key required. Works with Flickr's standard data export format.
 
 This script was created to process a specific Flickr export structure where:
@@ -10,7 +10,7 @@ This script was created to process a specific Flickr export structure where:
 
 ## Features
 
-- 100% offline — no Flickr API or internet connection needed
+- 100% offline – no Flickr API or internet connection needed
 - Reads album structure from `albums.json`
 - Matches photos/videos by extracting the numeric photo ID from filenames
 - Creates one folder per album with original filenames preserved
@@ -19,6 +19,7 @@ This script was created to process a specific Flickr export structure where:
 - Supports photos (jpg, jpeg, png, gif, heic) and videos (mp4, mov)
 - Progress bars via `tqdm`
 - Dry-run mode to preview what will happen
+- Configuration via `.env` file for easy setup
 
 ## Current results (example run)
 
@@ -31,59 +32,114 @@ This script was created to process a specific Flickr export structure where:
 ## Requirements
 
 - Python 3.8+
-- Only one external package:
+- Two external packages:
 
-bash
-pip install tqdm
-Installation
+```bash
+pip install tqdm python-dotenv
+```
 
-Clone or download this repository
-(Recommended) Create & activate a virtual environment:
+## Installation
 
-Bashpython -m venv venv
+1. Clone or download this repository
+2. (Recommended) Create & activate a virtual environment:
+
+```bash
+python -m venv venv
 venv\Scripts\activate          # Windows
+```
 or
+```bash
 source venv/bin/activate       # macOS / Linux
+```
 
-Install the dependency:
+3. Install the dependencies:
 
-Bashpip install tqdm
-Usage
-Place all your Flickr export ZIP files into one folder.
-Dry run (strongly recommended first)
-Bashpython main.py "C:\Users\YourName\Pictures\FLICKR" -o "C:\Users\YourName\Pictures\FLICKROUTPUT" --dry-run
-Real run
-Bashpython main.py "C:\Users\YourName\Pictures\FLICKR" -o "D:\Photos\Flickr Rebuilt Library"
-Command-line options
+```bash
+pip install tqdm python-dotenv
+```
 
-Argument Description DefaultinputFolder containing all *.zip files(required)-o, --outputDestination folder for album foldersFlickr Rebuilt--dry-runSimulate only — no files are moved or copiedoff
-Project files
-text.
+## Configuration
+
+1. Edit the `.env` file in the same directory as `main.py`
+2. Set the required `INPUT_FOLDER` path to your Flickr ZIP files location
+3. Optionally adjust `OUTPUT_FOLDER` and `DRY_RUN` settings
+
+Example `.env` file:
+
+```bash
+# INPUT_FOLDER - Required: Folder containing Flickr ZIP files
+INPUT_FOLDER=C:\Users\YourName\Pictures\FLICKR
+
+# OUTPUT_FOLDER - Optional: Where to create the rebuilt album structure
+# Default: "Flickr Rebuilt"
+OUTPUT_FOLDER=D:\Photos\Flickr Rebuilt Library
+
+# DRY_RUN - Optional: Set to true to simulate without making changes
+# Valid values: true, false, 1, 0, yes, no
+# Default: false
+DRY_RUN=false
+```
+
+## Usage
+
+1. Place all your Flickr export ZIP files into one folder
+2. Configure the `.env` file with your paths
+3. Run the script:
+
+**Dry run (strongly recommended first):**
+```bash
+# Set DRY_RUN=true in .env file, then:
+python main.py
+```
+
+**Real run:**
+```bash
+# Set DRY_RUN=false in .env file, then:
+python main.py
+```
+
+## Configuration Options
+
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `INPUT_FOLDER` | Folder containing all `*.zip` files | - | Yes |
+| `OUTPUT_FOLDER` | Destination folder for album folders | `Flickr Rebuilt` | No |
+| `DRY_RUN` | Simulate only – no files are moved or copied | `false` | No |
+
+## Project files
+
+```
 ├── main.py               # The complete script
+├── .env                  # Configuration file
 ├── README.md             # This file
-└── requirements.txt      # Just one line: tqdm
+└── requirements.txt      # Dependencies: tqdm, python-dotenv
+```
+
 ## How it works (high level)
-Reads albums.json from the metadata ZIP (72157724414707620_3d57a31755f7_part1.zip)
-Builds a mapping: photo ID → list of album IDs
-Extracts all photos/videos from all ZIP files into a temporary folder
-For each file:
-Extracts the Flickr photo ID from the filename (usually the long number before _o.jpg / _m.jpg etc.)
-Moves the file to the first album it belongs to
-Copies it to any additional albums
-Places unmatched files in 00 - Uncategorised (not in any album)
+
+1. Reads `albums.json` from the metadata ZIP (`72157724414707620_3d57a31755f7_part1.zip`)
+2. Builds a mapping: photo ID → list of album IDs
+3. Extracts all photos/videos from all ZIP files into a temporary folder
+4. For each file:
+   - Extracts the Flickr photo ID from the filename (usually the long number before `_o.jpg` / `_m.jpg` etc.)
+   - Moves the file to the first album it belongs to
+   - Copies it to any additional albums
+   - Places unmatched files in `00 - Uncategorised (not in any album)`
 
 ## Limitations
 
-No titles, descriptions, or tags are embedded (your export format does not include per-photo metadata JSON files)
-Some files will always end up in Uncategorised (normal for Flickr exports — includes profile pictures, deleted items, non-albumed photos, etc.)
-Folder names are sanitized (invalid characters replaced with _)
+- No titles, descriptions, or tags are embedded (your export format does not include per-photo metadata JSON files)
+- Some files will always end up in Uncategorised (normal for Flickr exports – includes profile pictures, deleted items, non-albumed photos, etc.)
+- Folder names are sanitized (invalid characters replaced with `_`)
 
 ## License
-MIT License — feel free to use, modify, and share.
-Acknowledgments
 
-Inspired by original tools like Frickl
-Uses tqdm for clean progress bars
+MIT License – feel free to use, modify, and share.
 
-Made in 2025–2026
+## Acknowledgments
+
+- Inspired by original tools like Frickl
+- Uses `tqdm` for clean progress bars
+
+Made in 2025–2026  
 Happy Flickr-liberating!
