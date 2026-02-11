@@ -1,6 +1,6 @@
 # FLICKRARCHIVES
 # Rebuild original Flickr photo library structure from the ZIP downloads FLICKR provides
-# NOTE - format is of xxxxx
+# NOTE - FLICK download ZIP format is of November 2025 (please check as FLICKR changes the format)
 # This is a Python rewrite from https://github.com/sebastian-raubach/frickl
 
 # main.py  (clean version – debug prints removed)
@@ -9,8 +9,10 @@ import json
 import shutil
 from pathlib import Path
 from tqdm import tqdm
-import argparse
 import re
+import os
+from dotenv import load_dotenv
+
 
 def rebuild_flickr_library(input_folder: str, output_folder: str, dry_run: bool = False):
     input_path = Path(input_folder).resolve()
@@ -141,11 +143,19 @@ def rebuild_flickr_library(input_folder: str, output_folder: str, dry_run: bool 
     print(f"   Extra copies made         : {multi_copies}")
     print(f"   Files in Uncategorised    : {unmatched}")
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Flickr album rebuilder")
-    parser.add_argument("input", help="Folder with Flickr ZIP files")
-    parser.add_argument("-o", "--output", default="Flickr Rebuilt", help="Output folder")
-    parser.add_argument("--dry-run", action="store_true", help="Simulate only")
-    args = parser.parse_args()
 
-    rebuild_flickr_library(args.input, args.output, args.dry_run)
+if __name__ == "__main__":
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Read configuration from environment variables
+    input_folder = os.getenv("INPUT_FOLDER")
+    output_folder = os.getenv("OUTPUT_FOLDER", "Flickr Rebuilt")
+    dry_run = os.getenv("DRY_RUN", "false").lower() in ("true", "1", "yes")
+
+    # Validate required parameters
+    if not input_folder:
+        print("ERROR: INPUT_FOLDER must be specified in .env file")
+        exit(1)
+
+    rebuild_flickr_library(input_folder, output_folder, dry_run)
